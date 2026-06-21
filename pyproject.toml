@@ -1,0 +1,20 @@
+[project]
+name = "llm-zoomcamp-homework"
+version = "0.1.0"
+description = "Agentic RAG homework project for LLM Zoomcamp 2026"
+requires-python = ">=3.14"
+dependencies = [
+  "openai",
+  "requests",
+  "minsearch",
+  "jupyter",
+  "python-dotenv",
+  "gitsource",
+  "toyaikit",
+]
+
+[project.scripts]
+run-homework = "src.main:main"
+
+[tool.uv]
+package = false

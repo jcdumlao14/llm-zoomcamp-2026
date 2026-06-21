@@ -1,0 +1,7 @@
+openai
+requests
+minsearch
+jupyter
+python-dotenv
+gitsource
+toyaikit
