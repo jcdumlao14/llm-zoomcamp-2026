@@ -1,4 +1,4 @@
-# LLM Zoomcamp 2026 Homework
+# Module-01-Agentic Rag Homework
 
 This project explores an Agentic RAG workflow for the LLM Zoomcamp homework. The goal is to load lesson content, search for relevant passages, compare standard RAG with chunked retrieval, and summarize how an agentic loop differs from plain retrieval-augmented generation.
 
