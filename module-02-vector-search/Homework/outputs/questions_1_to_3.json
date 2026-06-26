@@ -1,0 +1,44 @@
+{
+  "Q1": {
+    "question": "How does approximate nearest neighbor search work?",
+    "first_value": -0.02058203437252893,
+    "embedding_preview": [
+      -0.020582,
+      -0.014046,
+      0.030299,
+      -0.054038,
+      0.071878
+    ]
+  },
+  "Q2": {
+    "target_filename": "02-vector-search/lessons/07-sqlitesearch-vector.md",
+    "cosine_similarity": 0.36107027225589694
+  },
+  "Q3": {
+    "chunk_count": 295,
+    "best_chunk_filename": "02-vector-search/lessons/07-sqlitesearch-vector.md",
+    "best_chunk_score": 0.6489017718578813,
+    "top_chunk_scores": [
+      {
+        "filename": "02-vector-search/lessons/07-sqlitesearch-vector.md",
+        "score": 0.6489017718578813
+      },
+      {
+        "filename": "01-agentic-rag/lessons/05-search.md",
+        "score": 0.5510346348435939
+      },
+      {
+        "filename": "04-evaluation/lessons/05-search-metrics.md",
+        "score": 0.4065607072060337
+      },
+      {
+        "filename": "02-vector-search/lessons/04-vector-search.md",
+        "score": 0.40618197902402514
+      },
+      {
+        "filename": "06-best-practices/lessons/03-reranking.md",
+        "score": 0.40610594157880786
+      }
+    ]
+  }
+}
