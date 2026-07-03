@@ -1,0 +1,47 @@
+id: additional_workflows
+namespace: homework
+description: >
+  Collection of additional workflows for exploration and experimentation.
+  Use these as templates for your own workflows.
+
+tasks:
+  - id: workflow_template_1
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Additional Workflow Template 1:
+      - Parallel task execution
+      - Error handling and retries
+      - Conditional branching
+
+  - id: workflow_template_2
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Additional Workflow Template 2:
+      - Multi-model inference
+      - Response aggregation
+      - Result formatting
+
+  - id: workflow_template_3
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Additional Workflow Template 3:
+      - Streaming responses
+      - Real-time feedback
+      - Performance monitoring
+
+  - id: completion
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Additional workflows template complete.
+      Modify and extend these templates for your use cases.
+
+inputs:
+  - id: experiment_type
+    type: STRING
+    description: "Type of experiment to run"
+    defaults: "exploration"
+
+outputs:
+  - id: template_status
+    type: STRING
+    value: "Ready for customization"

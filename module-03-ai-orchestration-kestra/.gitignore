@@ -1,0 +1,77 @@
+# Environment and Secrets
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+*.key
+*.pem
+secrets/
+
+# IDE and Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs and Outputs
+logs/
+*.log
+debug-logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Kestra
+.kestra/
+kestra.pid
+
+# Data and Cache
+.cache/
+*.cache
+data/
+*.db
+*.sqlite
+
+# OS
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Desktop.ini
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# Screenshots (comment out if you want to track them)
+# screenshots/
+
+# API keys and credentials
+*.key.json
+config.json

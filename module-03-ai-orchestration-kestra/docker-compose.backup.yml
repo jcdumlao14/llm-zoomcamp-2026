@@ -1,0 +1,51 @@
+services:
+  kestra:
+    image: kestra/kestra:latest
+    container_name: kestra-llm-zoomcamp
+    restart: unless-stopped
+    pull_policy: always
+    user: "root"
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      KESTRA_CONFIGURATION: |
+        server:
+          ssl: false
+          port: 8080
+          cors:
+            enabled: true
+            allow-credentials: true
+            allow-origin-patterns: "*"
+        kestra:
+          storage:
+            type: local
+            local:
+              base-path: /data
+          repository:
+            type: memory
+          datastore:
+            type: memory
+          queue:
+            type: memory
+          cache:
+            type: memory
+          plugins:
+            core:
+              - name: io.kestra.plugin.core.http.Request
+              - name: io.kestra.plugin.core.log.Log
+              - name: io.kestra.plugin.core.flow.Flow
+              - name: io.kestra.plugin.core.flow.If
+              - name: io.kestra.plugin.core.flow.ForEach
+    volumes:
+      - kestra-data:/data
+    command: server standalone
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  kestra-data:

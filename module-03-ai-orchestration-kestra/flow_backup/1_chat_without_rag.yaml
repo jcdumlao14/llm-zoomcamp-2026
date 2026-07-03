@@ -1,0 +1,53 @@
+id: chat_without_rag
+namespace: homework
+description: >
+  Simple chat flow without Retrieval-Augmented Generation.
+  Demonstrates basic LLM integration with Kestra.
+
+tasks:
+  - id: chat_request
+    type: io.kestra.plugin.core.http.Request
+    uri: https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent
+    method: POST
+    headers:
+      Content-Type: application/json
+    body: |
+      {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "{{ params.question }}"
+              }
+            ]
+          }
+        ],
+        "generationConfig": {
+          "temperature": 0.7,
+          "maxOutputTokens": 500
+        }
+      }
+    auth:
+      type: BASIC
+      username: "{{ secret('GEMINI_API_KEY') }}"
+
+  - id: extract_response
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Question: {{ params.question }}
+      Response: {{ outputs.chat_request.body }}
+
+  - id: log_completion
+    type: io.kestra.plugin.core.log.Log
+    message: Execution completed successfully
+
+inputs:
+  - id: question
+    type: STRING
+    description: "The question to ask the AI model"
+    defaults: "What is AI orchestration?"
+
+outputs:
+  - id: response
+    type: STRING
+    value: "{{ outputs.chat_request.body }}"

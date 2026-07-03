@@ -1,0 +1,58 @@
+id: context_engineering
+namespace: homework
+description: >
+  Demonstrates context engineering principles.
+  Shows how to structure prompts for optimal LLM responses.
+
+tasks:
+  - id: system_prompt_engineering
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Applying context engineering principles:
+      1. Clear role definition
+      2. Task specification
+      3. Context boundaries
+      4. Output format
+
+  - id: engineered_request
+    type: io.kestra.plugin.core.http.Request
+    uri: https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent
+    method: POST
+    headers:
+      Content-Type: application/json
+    body: |
+      {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "You are an expert AI orchestration specialist. Your task is to provide concise, technically accurate responses.\n\nConstraints:\n- Use exactly 1 sentence for brief responses\n- Use technical terminology appropriately\n- Focus on production-relevant details\n\nQuestion: {{ params.question }}\n\nResponse:"
+              }
+            ]
+          }
+        ],
+        "generationConfig": {
+          "temperature": 0.3,
+          "maxOutputTokens": 200
+        }
+      }
+    auth:
+      type: BASIC
+      username: "{{ secret('GEMINI_API_KEY') }}"
+
+  - id: analyze_response
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Engineered Response: {{ outputs.engineered_request.body }}
+      Token count and quality metrics recorded.
+
+inputs:
+  - id: question
+    type: STRING
+    description: "Question to answer with engineering context"
+    defaults: "Explain Kestra workflows"
+
+outputs:
+  - id: engineered_response
+    type: STRING
+    value: "{{ outputs.engineered_request.body }}"

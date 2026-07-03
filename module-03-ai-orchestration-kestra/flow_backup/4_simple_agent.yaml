@@ -1,0 +1,61 @@
+id: simple_agent
+namespace: homework
+description: >
+  A simple AI agent that can reason and perform tasks.
+  Demonstrates autonomous decision-making in Kestra.
+
+variables:
+  summary_length: short
+
+tasks:
+  - id: agent_reasoning
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Initializing AI Agent...
+      Task: {{ params.task }}
+      Summary Length: {{ vars.summary_length }}
+
+  - id: agent_request
+    type: io.kestra.plugin.core.http.Request
+    uri: https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent
+    method: POST
+    headers:
+      Content-Type: application/json
+    body: |
+      {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "You are an autonomous AI agent. Analyze the following task and provide a structured response.\n\nTask: {{ params.task }}\n\nProvide your response in the following format:\n1. Analysis: Brief analysis of the task\n2. Plan: Your approach to solve it\n3. Summary: {% if vars.summary_length == 'short' %}Exactly 1 sentence summary{% else %}Exactly 3 sentence summary{% endif %}\n\nRespond concisely and focus on actionable insights."
+              }
+            ]
+          }
+        ],
+        "generationConfig": {
+          "temperature": 0.7,
+          "maxOutputTokens": {% if vars.summary_length == 'short' %}300{% else %}600{% endif %}
+        }
+      }
+    auth:
+      type: BASIC
+      username: "{{ secret('GEMINI_API_KEY') }}"
+
+  - id: extract_agent_output
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Agent Response:
+      {{ outputs.agent_request.body }}
+      
+      Token Configuration: summary_length = {{ vars.summary_length }}
+
+inputs:
+  - id: task
+    type: STRING
+    description: "Task for the AI agent to analyze"
+    defaults: "Design a system to monitor Kestra workflow performance"
+
+outputs:
+  - id: agent_output
+    type: STRING
+    value: "{{ outputs.agent_request.body }}"

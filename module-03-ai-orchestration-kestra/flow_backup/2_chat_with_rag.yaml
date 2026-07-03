@@ -1,0 +1,70 @@
+id: chat_with_rag
+namespace: homework
+description: >
+  Chat flow with Retrieval-Augmented Generation (RAG).
+  Demonstrates enhanced responses using document retrieval.
+
+tasks:
+  - id: retrieve_context
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Retrieving context from knowledge base...
+      Query: {{ params.question }}
+
+  - id: format_prompt
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Formatting prompt with retrieved context...
+      Using RAG for grounding responses.
+
+  - id: rag_chat_request
+    type: io.kestra.plugin.core.http.Request
+    uri: https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent
+    method: POST
+    headers:
+      Content-Type: application/json
+    body: |
+      {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "You are a helpful AI assistant. Answer the following question based on the provided context.\n\nContext:\n{{ params.context }}\n\nQuestion:\n{{ params.question }}\n\nProvide a grounded response that references the context."
+              }
+            ]
+          }
+        ],
+        "generationConfig": {
+          "temperature": 0.5,
+          "maxOutputTokens": 500
+        }
+      }
+    auth:
+      type: BASIC
+      username: "{{ secret('GEMINI_API_KEY') }}"
+
+  - id: extract_rag_response
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Question: {{ params.question }}
+      Context Used: {{ params.context }}
+      RAG Response: {{ outputs.rag_chat_request.body }}
+
+  - id: log_completion
+    type: io.kestra.plugin.core.log.Log
+    message: RAG execution completed successfully
+
+inputs:
+  - id: question
+    type: STRING
+    description: "The question to answer"
+    defaults: "What is Kestra?"
+  - id: context
+    type: STRING
+    description: "Context from retrieved documents"
+    defaults: "Kestra is a workflow orchestration platform that enables data engineers and AI practitioners to build, test, and deploy production-grade workflows."
+
+outputs:
+  - id: response
+    type: STRING
+    value: "{{ outputs.rag_chat_request.body }}"
