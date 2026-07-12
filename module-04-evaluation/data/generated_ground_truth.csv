@@ -1,0 +1,16 @@
+question,filename
+Could you explain the fundamental concept of how a Large Language Model (LLM) generates text?,01-agentic-rag/lessons/01-intro.md
+"What are the main limitations that a standalone Large Language Model has, according to this lesson?",01-agentic-rag/lessons/01-intro.md
+How does the Retrieval-Augmented Generation (RAG) system help overcome the inherent problems of LLMs?,01-agentic-rag/lessons/01-intro.md
+What is the specific project or application we will be developing in this module to apply RAG concepts?,01-agentic-rag/lessons/01-intro.md
+Why does this course opt to build a RAG system using plain Python and without frameworks first?,01-agentic-rag/lessons/01-intro.md
+"What specific Python version is needed for this module, and what's the very first command to get the project folder initialized?",01-agentic-rag/lessons/02-environment.md
+"Can you list the Python packages we need to add for this project? Specifically, what roles do minsearch and python-dotenv play?",01-agentic-rag/lessons/02-environment.md
+"What's the best way to handle my OpenAI API key to keep it secure, and what's recommended for monitoring my API usage for this course?",01-agentic-rag/lessons/02-environment.md
+"Once I've launched Jupyter, how do I confirm that my OpenAI API client is working correctly with the key I provided? What's the code to check this?",01-agentic-rag/lessons/02-environment.md
+"If I prefer to use an OpenAI-compatible provider like Groq, how do I set up the client differently? And is there an optional tool that can automatically load environment variables without calling load_dotenv() every time?",01-agentic-rag/lessons/02-environment.md
+Why does a plain Large Language Model (LLM) often give generic answers when asked about specific Zoomcamp course policies?,01-agentic-rag/lessons/03-rag.md
+"What does the acronym RAG stand for, and what are its two primary operations?",01-agentic-rag/lessons/03-rag.md
+Could you explain the benefit of manually adding relevant course information into an LLM's prompt when seeking specific answers?,01-agentic-rag/lessons/03-rag.md
+What are the three main components that make up the complete RAG system architecture?,01-agentic-rag/lessons/03-rag.md
+How important is the quality of the 'retrieval' or 'search' step to the overall performance of a RAG system?,01-agentic-rag/lessons/03-rag.md

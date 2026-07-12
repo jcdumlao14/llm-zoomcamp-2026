@@ -1,5 +1,10 @@
 """
 Module 04 - Generate Ground Truth Questions
+
+Generates synthetic Ground Truth questions using Google Gemini.
+
+Homework 4
+LLM Zoomcamp 2026
 """
 
 import json
@@ -7,51 +12,111 @@ import os
 
 import pandas as pd
 from dotenv import load_dotenv
-from openai import OpenAI
+from google import genai
 from pydantic import BaseModel
 
 from evaluation_utils import llm_structured
 from load_documents import load_documents
 
 
-# Load API key
+# ==========================================================
+# Load Environment
+# ==========================================================
+
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+api_key = os.getenv("GEMINI_API_KEY")
 
+if api_key is None:
+    raise ValueError("GEMINI_API_KEY not found in .env")
+
+client = genai.Client(api_key=api_key)
+
+
+# ==========================================================
+# Structured Output Model
+# ==========================================================
 
 class Questions(BaseModel):
     questions: list[str]
 
 
+# ==========================================================
+# Prompt
+# ==========================================================
+
 DATA_GEN_INSTRUCTIONS = """
-You emulate a student who is taking our LLM course.
+You emulate a student taking the LLM Zoomcamp course.
 
-You are given one lesson page from the course.
+You are given ONE lesson page.
 
-Formulate 5 questions this student might ask that are answered by this page.
+Generate exactly FIVE different questions.
 
 Rules:
 
-- The page should contain the answer to each question.
-- Make the questions complete and not too short.
-- Use as few words as possible from the page; don't copy its phrasing.
-- The questions should resemble how people actually ask things online:
-  not too formal, not too short, not too long.
-- Ask about the content of the lesson, not about its formatting or filename.
+- Every question must be answerable from this lesson.
+- Don't copy sentences.
+- Rewrite naturally.
+- Questions should sound like real users.
+- Don't ask about filenames.
+- Don't ask about formatting.
+- Return ONLY valid JSON.
 """.strip()
 
 
+# ==========================================================
+# Safe token extraction
+# ==========================================================
+
+def token_counts(usage):
+    """
+    Works with different Gemini SDK versions.
+    """
+
+    prompt = getattr(usage, "prompt_token_count", None)
+    completion = getattr(usage, "candidates_token_count", None)
+    total = getattr(usage, "total_token_count", None)
+
+    if prompt is None:
+        prompt = getattr(usage, "input_tokens", 0)
+
+    if completion is None:
+        completion = getattr(usage, "output_tokens", 0)
+
+    if total is None:
+        total = prompt + completion
+
+    return prompt, completion, total
+
+
+# ==========================================================
+# Main
+# ==========================================================
+
 def main():
+
+    print("=" * 60)
+    print("Loading lesson pages...")
+    print("=" * 60)
 
     documents = load_documents()
 
     pages = documents[:3]
 
-    records = []
-    usages = []
+    print(f"\nGenerating questions for {len(pages)} lesson pages...\n")
 
-    for page in pages:
+    records = []
+
+    prompt_tokens = []
+    completion_tokens = []
+    total_tokens = []
+
+    for i, page in enumerate(pages, start=1):
+
+        print("=" * 60)
+        print(f"Page {i}")
+        print(page["filename"])
+        print("=" * 60)
 
         user_prompt = json.dumps(
             {
@@ -66,11 +131,19 @@ def main():
             instructions=DATA_GEN_INSTRUCTIONS,
             user_prompt=user_prompt,
             output_type=Questions,
+            model="gemini-2.5-flash",
         )
 
-        usages.append(usage)
+        p, c, t = token_counts(usage)
+
+        prompt_tokens.append(p)
+        completion_tokens.append(c)
+        total_tokens.append(t)
 
         for q in result.questions:
+
+            print("•", q)
+
             records.append(
                 {
                     "question": q,
@@ -78,20 +151,34 @@ def main():
                 }
             )
 
-        print(f"Finished: {page['filename']}")
-        print(f"Input tokens : {usage.input_tokens}")
-        print(f"Output tokens: {usage.output_tokens}")
-        print("-" * 60)
+        print("\nToken Usage")
+        print(f"Prompt Tokens     : {p}")
+        print(f"Completion Tokens : {c}")
+        print(f"Total Tokens      : {t}")
+
+        print()
+
+    os.makedirs("data", exist_ok=True)
 
     df = pd.DataFrame(records)
 
-    df.to_csv("data/generated_ground_truth.csv", index=False)
+    output_file = "data/generated_ground_truth.csv"
 
-    avg_input = sum(u.input_tokens for u in usages) / len(usages)
+    df.to_csv(output_file, index=False)
 
     print("=" * 60)
-    print(f"Generated {len(df)} questions")
-    print(f"Average Input Tokens: {avg_input:.2f}")
+    print("Generation Complete")
+    print("=" * 60)
+
+    print(f"Questions Generated : {len(df)}")
+    print(f"CSV Saved           : {output_file}")
+
+    print()
+
+    print(f"Average Prompt Tokens     : {sum(prompt_tokens)/len(prompt_tokens):.2f}")
+    print(f"Average Completion Tokens : {sum(completion_tokens)/len(completion_tokens):.2f}")
+    print(f"Average Total Tokens      : {sum(total_tokens)/len(total_tokens):.2f}")
+
     print("=" * 60)
 
 
